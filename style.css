@@ -1,0 +1,169 @@
+/* Palette borrowed from IWF bumper plates against gym-floor steel.
+   red 25kg, blue 20kg, yellow 15kg, green 10kg. */
+:root {
+  --ink: #141c24;
+  --surface: #1b2732;
+  --raised: #22303d;
+  --line: #2e3d4c;
+  --chalk: #efede4;
+  --steel: #8798a6;
+  --red: #cc3a2f;
+  --blue: #3573c4;
+  --yellow: #dfb63a;
+  --green: #3f9160;
+  --pad: 1rem;
+  --radius: 3px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ink);
+  color: var(--chalk);
+  font-family: Archivo, 'Helvetica Neue', Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.45;
+  font-variant-numeric: tabular-nums;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app { max-width: 560px; margin: 0 auto; padding: var(--pad) var(--pad) 4rem; }
+
+h1, h2, h3 { margin: 0; font-weight: 800; letter-spacing: -0.02em; line-height: 1.1; }
+h1 { font-size: 1.75rem; }
+h2 { font-size: 1.35rem; }
+p { margin: 0.4rem 0; }
+a { color: var(--chalk); }
+
+.muted { color: var(--steel); }
+.small { font-size: 0.85rem; }
+.stack > * + * { margin-top: 0.75rem; }
+
+/* ---------- top bar ---------- */
+.bar {
+  display: flex; align-items: baseline; gap: 0.75rem;
+  padding-bottom: 0.75rem; margin-bottom: 1rem;
+  border-bottom: 1px solid var(--line);
+}
+.bar .spacer { margin-left: auto; }
+.linkish {
+  background: none; border: 0; padding: 0;
+  color: var(--steel); font: inherit; font-size: 0.85rem;
+  text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+}
+.linkish:hover { color: var(--chalk); }
+
+/* ---------- buttons ---------- */
+button { font-family: inherit; }
+.btn {
+  display: block; width: 100%;
+  padding: 0.85rem 1rem;
+  background: var(--raised); color: var(--chalk);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  font-size: 1rem; font-weight: 600; text-align: left; cursor: pointer;
+}
+.btn:hover { border-color: var(--steel); }
+.btn.primary { background: var(--blue); border-color: var(--blue); }
+.btn.primary:hover { filter: brightness(1.12); }
+.btn.ghost { background: none; }
+.btn .sub { display: block; font-weight: 400; font-size: 0.85rem; color: var(--steel); }
+.btn.primary .sub { color: rgba(255, 255, 255, 0.82); }
+
+:focus-visible { outline: 2px solid var(--yellow); outline-offset: 2px; }
+
+/* ---------- day list ---------- */
+.daybtn { display: flex; align-items: center; gap: 0.9rem; }
+.daynum {
+  flex: none; width: 2.1rem; height: 2.1rem;
+  display: grid; place-items: center;
+  border: 2px solid var(--steel); border-radius: 50%;
+  font-weight: 800; font-size: 0.95rem;
+}
+
+/* ---------- toggles ---------- */
+.seg { display: flex; border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.seg button {
+  flex: 1; padding: 0.65rem; background: none; border: 0;
+  color: var(--steel); font-size: 0.95rem; font-weight: 600; cursor: pointer;
+}
+.seg button[aria-pressed='true'] { background: var(--raised); color: var(--chalk); }
+
+.check { display: flex; align-items: center; gap: 0.6rem; color: var(--steel); font-size: 0.9rem; }
+.check input { width: 1.1rem; height: 1.1rem; accent-color: var(--blue); }
+
+/* ---------- exercise rows ---------- */
+.row {
+  border-left: 4px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  padding: 0.85rem 0 0.85rem 0.85rem;
+}
+.row.done { border-left-color: var(--green); }
+.row.heavy { border-left-color: var(--red); }
+.slot { font-size: 0.78rem; color: var(--steel); }
+.name { font-size: 1.1rem; font-weight: 600; margin-top: 0.1rem; }
+.ro { font-size: 0.82rem; color: var(--steel); }
+.meta { display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; margin-top: 0.5rem; font-size: 0.88rem; }
+.prescribe { font-weight: 600; }
+.last { color: var(--steel); }
+
+.tag {
+  display: inline-block; padding: 0.05rem 0.4rem; border-radius: 2px;
+  font-size: 0.72rem; font-weight: 600; vertical-align: 0.1em;
+}
+.tag.new { background: var(--yellow); color: #22303d; }
+.tag.spine { background: var(--red); color: #fff; }
+
+.entry { display: flex; gap: 0.5rem; margin-top: 0.6rem; }
+.entry input {
+  min-width: 0; padding: 0.55rem 0.6rem;
+  background: var(--surface); color: var(--chalk);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  font: inherit; font-size: 0.95rem;
+}
+.entry input.w { flex: 0 1 8rem; }
+.entry input.r { flex: 1 1 auto; }
+.entry button {
+  flex: none; padding: 0.55rem 0.8rem;
+  background: var(--raised); color: var(--chalk);
+  border: 1px solid var(--line); border-radius: var(--radius);
+  font-weight: 600; cursor: pointer;
+}
+.entry button.save { background: var(--blue); border-color: var(--blue); }
+
+.rowfoot { display: flex; gap: 1rem; margin-top: 0.5rem; }
+
+.skipped { border-left: 4px solid var(--line); padding: 0.6rem 0 0.6rem 0.85rem; color: var(--steel); font-size: 0.9rem; }
+
+.finisher { margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--line); color: var(--steel); }
+
+/* ---------- loading ---------- */
+.loading { min-height: 70vh; display: grid; place-content: center; gap: 1.25rem; text-align: center; }
+.plate {
+  width: 92px; height: 92px; margin: 0 auto; border-radius: 50%;
+  border: 14px solid var(--blue); background: var(--surface);
+  animation: spin 1.4s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.track { width: 220px; height: 3px; background: var(--line); margin: 0 auto; overflow: hidden; }
+.track i { display: block; height: 100%; width: 0; background: var(--chalk); transition: width 0.3s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .plate { animation: none; }
+  .track i { transition: none; }
+}
+
+/* ---------- forms ---------- */
+.field { display: block; margin-bottom: 0.75rem; }
+.field span { display: block; font-size: 0.85rem; color: var(--steel); margin-bottom: 0.25rem; }
+.field input {
+  width: 100%; padding: 0.7rem;
+  background: var(--surface); color: var(--chalk);
+  border: 1px solid var(--line); border-radius: var(--radius); font: inherit;
+}
+.error { color: var(--red); font-size: 0.9rem; }
+.banner {
+  background: var(--raised); border: 1px solid var(--line); border-left: 4px solid var(--yellow);
+  padding: 0.6rem 0.8rem; font-size: 0.88rem; color: var(--steel); border-radius: var(--radius);
+}

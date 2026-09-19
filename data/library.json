@@ -1,0 +1,3742 @@
+{
+  "meta": {
+    "title": "Exercise library",
+    "source": "GYM.xlsx — 3 years of logged training",
+    "generated": "2026-09-19",
+    "exercise_count": 82,
+    "logged_count": 65,
+    "suggested_count": 8,
+    "how_to_use": "Pick a split from `splits`. For each slot in the day, choose ONE exercise whose movement_pattern is in eligible_patterns, rotating the choice across weeks. Drop priority=optional slots first when short on time. Filter spinal_load=='low' on back-sensitive days — every core slot has at least one low option.",
+    "spinal_load_key": {
+      "low": "Safe on back-sensitive days",
+      "moderate": "Usable, but monitor",
+      "high": "Skip or substitute during a flare-up"
+    },
+    "load_schemes": {
+      "stack_or_total": "total_kg is the whole load (machine stack or single implement)",
+      "per_hand": "per_hand_kg per dumbbell; total_kg is both",
+      "bar_plus_per_side": "per_side_kg added each side; bar weight was never recorded",
+      "bodyweight_or_none": "no external load logged"
+    },
+    "gap_filler_count": 8,
+    "new_option_count": 9,
+    "progression_rule": "Double progression. Start at rep_range.min. Each session add a rep to each set. When every set reaches rep_range.max with clean form, add the smallest load increment and reset to rep_range.min.",
+    "weekly_volume_target": "10-20 hard sets per muscle per week, counting indirect work (presses give triceps and front delts sets; rows and pulldowns give biceps and rear delts sets).",
+    "slot_frequency": {
+      "per_session": "Fill every time this day is trained.",
+      "per_week": "Fill only if no exercise of an eligible pattern appears in the trailing 7 days of log.jsonl. Requires the generator to pass week context into generate()."
+    },
+    "constraints": [
+      "One exercise per movement_pattern per session.",
+      "At most one spinal_load=='high' exercise per session.",
+      "At most two hinge-pattern sessions per trailing 7 days while reintroducing hinges.",
+      "Skip an optional slot whose pattern already appears elsewhere in the same week.",
+      "No triceps_compound on a day with two or more horizontal_press picks.",
+      "A manual swap updates the session but NOT slot_history."
+    ]
+  },
+  "movement_patterns": {
+    "horizontal_press": "Flat pressing — mid chest, triceps, front delts",
+    "incline_press": "Incline pressing — upper chest",
+    "chest_fly": "Shoulder-horizontal adduction — chest isolation",
+    "pullover": "Shoulder extension with straight arms — lats and serratus",
+    "vertical_pull": "Pulling from overhead — lats",
+    "horizontal_row": "Pulling toward the torso — mid traps, rhomboids, lats",
+    "rear_delt": "Rear deltoid isolation and shoulder health",
+    "overhead_press": "Pressing overhead — front and side delts",
+    "lateral_raise": "Shoulder abduction — side delts",
+    "front_raise": "Shoulder flexion — front delts (usually redundant)",
+    "shrug_traps": "Scapular elevation — upper traps",
+    "upright_row": "Hybrid side delt / upper trap pull",
+    "elbow_flexion_supinated": "Palms-up curls — biceps",
+    "elbow_flexion_preacher": "Curls with elbows in front of the torso — short-head bias",
+    "elbow_flexion_neutral": "Neutral-grip curls — brachialis and forearm",
+    "triceps_pushdown": "Elbow extension with arms at the side — lateral and medial heads",
+    "triceps_overhead": "Elbow extension with arms overhead — long head",
+    "triceps_compound": "Multi-joint pressing biased to triceps",
+    "squat": "Knee-dominant bilateral pushing — quads and glutes",
+    "single_leg": "Unilateral knee-dominant work — quads, glutes, stability",
+    "hinge": "Hip-dominant bending — hamstrings, glutes, erectors",
+    "hip_thrust": "Horizontal hip extension — glutes",
+    "leg_extension": "Knee extension isolation — quads",
+    "leg_curl": "Knee flexion isolation — hamstrings",
+    "hip_abduction_adduction": "Frontal-plane hip work — abductors and adductors",
+    "calf_standing": "Straight-knee calf raises — gastrocnemius",
+    "calf_seated": "Bent-knee calf raises — soleus",
+    "core_flexion": "Spinal flexion — rectus abdominis",
+    "core_rotation": "Rotation and lateral flexion — obliques",
+    "core_antiextension": "Resisting spinal extension — deep core",
+    "core_hip_flexion": "Hip flexion with the trunk braced — lower abs and hip flexors",
+    "elbow_flexion_extended": "Curls with elbows behind the torso — biceps long head",
+    "core_antirotation": "Resisting rotation — deep core, very spine-friendly"
+  },
+  "pools": {
+    "horizontal_press": [
+      "bench_press",
+      "db_bench_press",
+      "machine_press_straight",
+      "chest_press_plate",
+      "pushups",
+      "chest_dip"
+    ],
+    "incline_press": [
+      "incline_db_press",
+      "incline_barbell_press",
+      "incline_machine_press"
+    ],
+    "chest_fly": [
+      "flat_db_fly",
+      "incline_db_fly",
+      "machine_fly",
+      "low_to_high_cable_fly",
+      "cable_fly"
+    ],
+    "pullover": [
+      "chest_pullover",
+      "lat_pullover_cable"
+    ],
+    "vertical_pull": [
+      "lat_pulldown",
+      "behind_neck_pulldown",
+      "close_grip_pulldown",
+      "chin_up"
+    ],
+    "horizontal_row": [
+      "db_row",
+      "seated_cable_row",
+      "seated_cable_row_wide",
+      "machine_row",
+      "chest_supported_row"
+    ],
+    "rear_delt": [
+      "rear_delt_db_fly",
+      "rear_delt_machine_fly",
+      "facepull"
+    ],
+    "lateral_raise": [
+      "lateral_raise",
+      "cable_lateral_raise"
+    ],
+    "front_raise": [
+      "front_raise"
+    ],
+    "overhead_press": [
+      "arnold_press",
+      "db_shoulder_press",
+      "machine_shoulder_press"
+    ],
+    "shrug_traps": [
+      "shrug"
+    ],
+    "upright_row": [
+      "upright_row"
+    ],
+    "elbow_flexion_neutral": [
+      "hammer_curl"
+    ],
+    "elbow_flexion_preacher": [
+      "preacher_curl"
+    ],
+    "elbow_flexion_supinated": [
+      "db_curl",
+      "machine_curl",
+      "barbell_curl"
+    ],
+    "triceps_compound": [
+      "bench_dip",
+      "close_grip_bench"
+    ],
+    "triceps_overhead": [
+      "db_overhead_extension",
+      "cable_overhead_extension",
+      "skull_crusher"
+    ],
+    "triceps_pushdown": [
+      "rope_pushdown",
+      "straight_bar_pushdown",
+      "reverse_grip_pushdown",
+      "tricep_kickback"
+    ],
+    "leg_extension": [
+      "leg_extension"
+    ],
+    "squat": [
+      "leg_press",
+      "barbell_squat",
+      "machine_squat",
+      "db_squat"
+    ],
+    "leg_curl": [
+      "leg_curl",
+      "seated_leg_curl"
+    ],
+    "single_leg": [
+      "db_lunges",
+      "bulgarian_split_squat"
+    ],
+    "hip_abduction_adduction": [
+      "hip_abduction_adduction"
+    ],
+    "calf_standing": [
+      "machine_calf_raise",
+      "db_calf_raise"
+    ],
+    "core_antiextension": [
+      "plank"
+    ],
+    "core_flexion": [
+      "crunch",
+      "weighted_crunch",
+      "knee_touch_crunch",
+      "cable_crunch"
+    ],
+    "core_hip_flexion": [
+      "leg_scissor",
+      "knees_to_chest",
+      "mountain_climbers",
+      "hanging_knee_raise"
+    ],
+    "core_rotation": [
+      "russian_twists",
+      "heel_touch",
+      "bicycle_crunch",
+      "side_crunch"
+    ],
+    "hinge": [
+      "back_extension_45",
+      "cable_pull_through",
+      "romanian_deadlift"
+    ],
+    "hip_thrust": [
+      "hip_thrust"
+    ],
+    "calf_seated": [
+      "seated_calf_raise"
+    ],
+    "elbow_flexion_extended": [
+      "incline_db_curl"
+    ],
+    "core_antirotation": [
+      "pallof_press"
+    ]
+  },
+  "exercises": [
+    {
+      "id": "bench_press",
+      "name_en": "Bench press",
+      "name_ro": "Impins cu bara",
+      "body_region": "chest",
+      "movement_pattern": "horizontal_press",
+      "pattern_description": "Flat pressing — mid chest, triceps, front delts",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial",
+        "front_delt"
+      ],
+      "equipment": "barbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "bar +  20 kg * 2",
+        "scheme": "bar_plus_per_side",
+        "per_side_kg": 20.0,
+        "bar_kg": null,
+        "note": "bar weight not recorded; app must ask once"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/hWbUlkb5Ms4",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 5,
+        "max": 8,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_bench_press",
+      "name_en": "Flat dumbbell press",
+      "name_ro": "Impins cu gantere orizontal",
+      "body_region": "chest",
+      "movement_pattern": "horizontal_press",
+      "pattern_description": "Flat pressing — mid chest, triceps, front delts",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial",
+        "front_delt"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "20kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 20.0,
+        "total_kg": 40.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=YQ2s_Y7g5Qk",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "incline_db_press",
+      "name_en": "Incline dumbbell press",
+      "name_ro": "Impins cu gantere inclinat",
+      "body_region": "chest",
+      "movement_pattern": "incline_press",
+      "pattern_description": "Incline pressing — upper chest",
+      "primary_muscles": [
+        "chest_upper"
+      ],
+      "secondary_muscles": [
+        "front_delt",
+        "triceps_lateral_medial"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "24kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 24.0,
+        "total_kg": 48.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=5CECBjd7HLQ",
+      "notes": "Only upper-chest press in the library.",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "flat_db_fly",
+      "name_en": "Flat dumbbell fly",
+      "name_ro": "Fluturari pe plan orizontal",
+      "body_region": "chest",
+      "movement_pattern": "chest_fly",
+      "pattern_description": "Shoulder-horizontal adduction — chest isolation",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "front_delt"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "14kg *2",
+        "scheme": "per_hand",
+        "per_hand_kg": 14.0,
+        "total_kg": 28.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/rk8YayRoTRQ",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "incline_db_fly",
+      "name_en": "Incline dumbbell fly",
+      "name_ro": "Fluturari pe plan inclinat",
+      "body_region": "chest",
+      "movement_pattern": "chest_fly",
+      "pattern_description": "Shoulder-horizontal adduction — chest isolation",
+      "primary_muscles": [
+        "chest_upper"
+      ],
+      "secondary_muscles": [
+        "front_delt"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "14kg *2",
+        "scheme": "per_hand",
+        "per_hand_kg": 14.0,
+        "total_kg": 28.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/kIpagzRxFPo",
+      "notes": "Upper-chest bias.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "machine_fly",
+      "name_en": "Machine chest fly (pec deck)",
+      "name_ro": "Fluturari la aparat",
+      "body_region": "chest",
+      "movement_pattern": "chest_fly",
+      "pattern_description": "Shoulder-horizontal adduction — chest isolation",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "front_delt"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "42kg",
+        "scheme": "stack_or_total",
+        "total_kg": 42.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=eGjt4lk6g34",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "machine_press_straight",
+      "name_en": "Machine chest press (straight)",
+      "name_ro": "Impins la aparat (straight)",
+      "body_region": "chest",
+      "movement_pattern": "horizontal_press",
+      "pattern_description": "Flat pressing — mid chest, triceps, front delts",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial",
+        "front_delt"
+      ],
+      "equipment": "machine",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "60kg",
+        "scheme": "stack_or_total",
+        "total_kg": 60.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/2awX3rTGa1k",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "chest_press_plate",
+      "name_en": "Chest press (plate loaded)",
+      "name_ro": "Presa de piept",
+      "body_region": "chest",
+      "movement_pattern": "horizontal_press",
+      "pattern_description": "Flat pressing — mid chest, triceps, front delts",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial",
+        "front_delt"
+      ],
+      "equipment": "machine",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "15kg *2",
+        "scheme": "per_hand",
+        "per_hand_kg": 15.0,
+        "total_kg": 30.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/v-CO63B98-o",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "pushups",
+      "name_en": "Push-ups",
+      "name_ro": "Flotari",
+      "body_region": "chest",
+      "movement_pattern": "horizontal_press",
+      "pattern_description": "Flat pressing — mid chest, triceps, front delts",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial",
+        "front_delt",
+        "transverse_core"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=WDIpL0pjun0",
+      "notes": "No-equipment fallback for the flat press slot.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 25,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "chest_pullover",
+      "name_en": "Dumbbell pullover",
+      "name_ro": "Chest pullover",
+      "body_region": "chest",
+      "movement_pattern": "pullover",
+      "pattern_description": "Shoulder extension with straight arms — lats and serratus",
+      "primary_muscles": [
+        "lats"
+      ],
+      "secondary_muscles": [
+        "chest_mid",
+        "serratus",
+        "triceps_long"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "14kg",
+        "scheme": "stack_or_total",
+        "total_kg": 14.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/raU5C9bWo9U",
+      "notes": "Listed under chest in the original file, but it is mainly a lat/serratus movement.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "low_to_high_cable_fly",
+      "name_en": "Low-to-high cable fly",
+      "name_ro": "low to high cable fly",
+      "body_region": "chest",
+      "movement_pattern": "chest_fly",
+      "pattern_description": "Shoulder-horizontal adduction — chest isolation",
+      "primary_muscles": [
+        "chest_upper"
+      ],
+      "secondary_muscles": [
+        "front_delt"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "35kg",
+        "scheme": "stack_or_total",
+        "total_kg": 35.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/BwqlWtr3v10?feature=share",
+      "notes": "Upper-chest bias.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "cable_fly",
+      "name_en": "Cable fly",
+      "name_ro": "cable fly",
+      "body_region": "chest",
+      "movement_pattern": "chest_fly",
+      "pattern_description": "Shoulder-horizontal adduction — chest isolation",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "front_delt"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "35kg",
+        "scheme": "stack_or_total",
+        "total_kg": 35.0
+      },
+      "in_log": true,
+      "youtube": "https://youtu.be/4mfLHnFL0Uw",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "lat_pulldown",
+      "name_en": "Lat pulldown",
+      "name_ro": "Lat pulldowns",
+      "body_region": "back",
+      "movement_pattern": "vertical_pull",
+      "pattern_description": "Pulling from overhead — lats",
+      "primary_muscles": [
+        "lats"
+      ],
+      "secondary_muscles": [
+        "biceps",
+        "mid_traps_rhomboids"
+      ],
+      "equipment": "cable",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "91kg",
+        "scheme": "stack_or_total",
+        "total_kg": 91.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=JGeRYIZdojU",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "behind_neck_pulldown",
+      "name_en": "Behind-the-neck lat pulldown",
+      "name_ro": "pulldown la ceafa",
+      "body_region": "back",
+      "movement_pattern": "vertical_pull",
+      "pattern_description": "Pulling from overhead — lats",
+      "primary_muscles": [
+        "lats"
+      ],
+      "secondary_muscles": [
+        "mid_traps_rhomboids",
+        "rear_delt"
+      ],
+      "equipment": "cable",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "77kg",
+        "scheme": "stack_or_total",
+        "total_kg": 77.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/YT3pKgh7N3o",
+      "notes": "Shoulder-risk: forces extreme external rotation. Close-grip pulldown is a safer substitute.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "close_grip_pulldown",
+      "name_en": "Close-grip lat pulldown",
+      "name_ro": "Close grip lat pulldown",
+      "body_region": "back",
+      "movement_pattern": "vertical_pull",
+      "pattern_description": "Pulling from overhead — lats",
+      "primary_muscles": [
+        "lats"
+      ],
+      "secondary_muscles": [
+        "biceps"
+      ],
+      "equipment": "cable",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "84kg",
+        "scheme": "stack_or_total",
+        "total_kg": 84.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/ZSF1cC_o0xc",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_row",
+      "name_en": "Single-arm dumbbell row",
+      "name_ro": "ramat la banca",
+      "body_region": "back",
+      "movement_pattern": "horizontal_row",
+      "pattern_description": "Pulling toward the torso — mid traps, rhomboids, lats",
+      "primary_muscles": [
+        "lats",
+        "mid_traps_rhomboids"
+      ],
+      "secondary_muscles": [
+        "biceps",
+        "rear_delt"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": true,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "32kg",
+        "scheme": "stack_or_total",
+        "total_kg": 32.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=DMo3HJoawrU",
+      "notes": "Bench-supported, so spine stays unloaded.",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "seated_cable_row",
+      "name_en": "Seated cable row",
+      "name_ro": "ramat la aparat",
+      "body_region": "back",
+      "movement_pattern": "horizontal_row",
+      "pattern_description": "Pulling toward the torso — mid traps, rhomboids, lats",
+      "primary_muscles": [
+        "mid_traps_rhomboids",
+        "lats"
+      ],
+      "secondary_muscles": [
+        "biceps",
+        "rear_delt"
+      ],
+      "equipment": "cable",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "91kg",
+        "scheme": "stack_or_total",
+        "total_kg": 91.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=UCXxvVItLoM",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "seated_cable_row_wide",
+      "name_en": "Seated cable row, wide grip",
+      "name_ro": "ramat la aparat priza wide",
+      "body_region": "back",
+      "movement_pattern": "horizontal_row",
+      "pattern_description": "Pulling toward the torso — mid traps, rhomboids, lats",
+      "primary_muscles": [
+        "mid_traps_rhomboids",
+        "rear_delt"
+      ],
+      "secondary_muscles": [
+        "lats",
+        "biceps"
+      ],
+      "equipment": "cable",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "91kg",
+        "scheme": "stack_or_total",
+        "total_kg": 91.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/vqPY3fDessY",
+      "notes": "Counts partly as rear-delt volume; avoid stacking with a rear-delt isolation on the same day.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "machine_row",
+      "name_en": "Machine row",
+      "name_ro": "ramat la aparat",
+      "body_region": "back",
+      "movement_pattern": "horizontal_row",
+      "pattern_description": "Pulling toward the torso — mid traps, rhomboids, lats",
+      "primary_muscles": [
+        "mid_traps_rhomboids",
+        "lats"
+      ],
+      "secondary_muscles": [
+        "biceps"
+      ],
+      "equipment": "machine",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "40kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 40.0,
+        "total_kg": 80.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/-q4OkPSL2AA",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "rear_delt_db_fly",
+      "name_en": "Bent-over dumbbell rear fly",
+      "name_ro": "fluturari spate",
+      "body_region": "back",
+      "movement_pattern": "rear_delt",
+      "pattern_description": "Rear deltoid isolation and shoulder health",
+      "primary_muscles": [
+        "rear_delt"
+      ],
+      "secondary_muscles": [
+        "mid_traps_rhomboids"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "12.5kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 12.5,
+        "total_kg": 25.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/LsT-bR_zxLo",
+      "notes": "Bent-over version loads the lower back isometrically; use chest-supported on back-sensitive days.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "rear_delt_machine_fly",
+      "name_en": "Rear delt fly machine",
+      "name_ro": "fluuturari spate la aparat",
+      "body_region": "back",
+      "movement_pattern": "rear_delt",
+      "pattern_description": "Rear deltoid isolation and shoulder health",
+      "primary_muscles": [
+        "rear_delt"
+      ],
+      "secondary_muscles": [
+        "mid_traps_rhomboids"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "36kg",
+        "scheme": "stack_or_total",
+        "total_kg": 36.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/O2J8Qs7Wl3U",
+      "notes": "Back-friendly rear delt option.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "lat_pullover_cable",
+      "name_en": "Cable lat pullover",
+      "name_ro": "lat pullover",
+      "body_region": "back",
+      "movement_pattern": "pullover",
+      "pattern_description": "Shoulder extension with straight arms — lats and serratus",
+      "primary_muscles": [
+        "lats"
+      ],
+      "secondary_muscles": [
+        "chest_mid",
+        "triceps_long",
+        "serratus"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "91kg",
+        "scheme": "stack_or_total",
+        "total_kg": 91.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/v8wK0v32dAg",
+      "notes": "Same movement as chest_pullover, different implement.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "lateral_raise",
+      "name_en": "Lateral raise",
+      "name_ro": "lateral raise",
+      "body_region": "shoulders",
+      "movement_pattern": "lateral_raise",
+      "pattern_description": "Shoulder abduction — side delts",
+      "primary_muscles": [
+        "side_delt"
+      ],
+      "secondary_muscles": [
+        "upper_traps"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "12.5kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 12.5,
+        "total_kg": 25.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/Kl3LEzQ5Zqs",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "front_raise",
+      "name_en": "Front raise",
+      "name_ro": "front raise (dumbell or weight)",
+      "body_region": "shoulders",
+      "movement_pattern": "front_raise",
+      "pattern_description": "Shoulder flexion — front delts (usually redundant)",
+      "primary_muscles": [
+        "front_delt"
+      ],
+      "secondary_muscles": [
+        "upper_traps"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "12.5kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 12.5,
+        "total_kg": 25.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/h9xfpTrAvkE",
+      "notes": "Largely redundant: front delts are already heavily worked by every press. Lowest-priority slot.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "arnold_press",
+      "name_en": "Arnold press",
+      "name_ro": "arnold press",
+      "body_region": "shoulders",
+      "movement_pattern": "overhead_press",
+      "pattern_description": "Pressing overhead — front and side delts",
+      "primary_muscles": [
+        "front_delt",
+        "side_delt"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "12.5kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 12.5,
+        "total_kg": 25.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=6Z15_WdXmVw",
+      "notes": "Seated version keeps spinal load low.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_shoulder_press",
+      "name_en": "Dumbbell shoulder press",
+      "name_ro": "shoulder press",
+      "body_region": "shoulders",
+      "movement_pattern": "overhead_press",
+      "pattern_description": "Pressing overhead — front and side delts",
+      "primary_muscles": [
+        "front_delt"
+      ],
+      "secondary_muscles": [
+        "side_delt",
+        "triceps_lateral_medial"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "17.5kg *2",
+        "scheme": "per_hand",
+        "per_hand_kg": 17.5,
+        "total_kg": 35.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/eNMl9UoO7YA",
+      "notes": "Seated version keeps spinal load low.",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "machine_shoulder_press",
+      "name_en": "Machine shoulder press",
+      "name_ro": "shoulder press on machine",
+      "body_region": "shoulders",
+      "movement_pattern": "overhead_press",
+      "pattern_description": "Pressing overhead — front and side delts",
+      "primary_muscles": [
+        "front_delt"
+      ],
+      "secondary_muscles": [
+        "side_delt",
+        "triceps_lateral_medial"
+      ],
+      "equipment": "machine",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "60kg",
+        "scheme": "stack_or_total",
+        "total_kg": 60.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/L3R_9Lk_rsQ",
+      "notes": "Back-friendly overhead press option.",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "shrug",
+      "name_en": "Shrug",
+      "name_ro": "trapeze raise",
+      "body_region": "shoulders",
+      "movement_pattern": "shrug_traps",
+      "pattern_description": "Scapular elevation — upper traps",
+      "primary_muscles": [
+        "upper_traps"
+      ],
+      "secondary_muscles": [
+        "forearms_grip"
+      ],
+      "equipment": "dumbbell_or_machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "35kg",
+        "scheme": "stack_or_total",
+        "total_kg": 35.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/T4gexJy6ttc",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "upright_row",
+      "name_en": "Upright row",
+      "name_ro": "upright row",
+      "body_region": "shoulders",
+      "movement_pattern": "upright_row",
+      "pattern_description": "Hybrid side delt / upper trap pull",
+      "primary_muscles": [
+        "side_delt",
+        "upper_traps"
+      ],
+      "secondary_muscles": [
+        "biceps"
+      ],
+      "equipment": "barbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "bar + 12.5kg * 2",
+        "scheme": "bar_plus_per_side",
+        "per_side_kg": 12.5,
+        "bar_kg": null,
+        "note": "bar weight not recorded; app must ask once"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=um3VVzqunPU",
+      "notes": "Overlaps both lateral_raise and shrug_traps. Can impinge the shoulder; keep the pull below chest height.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "facepull",
+      "name_en": "Face pull",
+      "name_ro": "facepull",
+      "body_region": "shoulders",
+      "movement_pattern": "rear_delt",
+      "pattern_description": "Rear deltoid isolation and shoulder health",
+      "primary_muscles": [
+        "rear_delt"
+      ],
+      "secondary_muscles": [
+        "mid_traps_rhomboids"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "51kg",
+        "scheme": "stack_or_total",
+        "total_kg": 51.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/IeOqdw9WI90?feature=share",
+      "notes": "Best all-round shoulder-health pick in the rear_delt pool.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "hammer_curl",
+      "name_en": "Hammer curl",
+      "name_ro": "ciocane",
+      "body_region": "arms",
+      "movement_pattern": "elbow_flexion_neutral",
+      "pattern_description": "Neutral-grip curls — brachialis and forearm",
+      "primary_muscles": [
+        "brachialis_brachioradialis"
+      ],
+      "secondary_muscles": [
+        "biceps",
+        "forearms_grip"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "22kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 22.0,
+        "total_kg": 44.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=BRVDS6HVR9Q",
+      "notes": "The only neutral-grip curl in the library; do not substitute with a supinated curl.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "preacher_curl",
+      "name_en": "Preacher curl",
+      "name_ro": "preacher curls",
+      "body_region": "arms",
+      "movement_pattern": "elbow_flexion_preacher",
+      "pattern_description": "Curls with elbows in front of the torso — short-head bias",
+      "primary_muscles": [
+        "biceps"
+      ],
+      "secondary_muscles": [
+        "brachialis_brachioradialis"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "57kg",
+        "scheme": "stack_or_total",
+        "total_kg": 57.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/Pp1VDEfd_us",
+      "notes": "Elbows in front of the torso: short-head bias. Distinct from standing curls.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_curl",
+      "name_en": "Dumbbell curl",
+      "name_ro": "flexi biceps",
+      "body_region": "arms",
+      "movement_pattern": "elbow_flexion_supinated",
+      "pattern_description": "Palms-up curls — biceps",
+      "primary_muscles": [
+        "biceps"
+      ],
+      "secondary_muscles": [
+        "brachialis_brachioradialis"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "14kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 14.0,
+        "total_kg": 28.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/Pp1VDEfd_us",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "machine_curl",
+      "name_en": "Machine / cable curl",
+      "name_ro": "normal curl",
+      "body_region": "arms",
+      "movement_pattern": "elbow_flexion_supinated",
+      "pattern_description": "Palms-up curls — biceps",
+      "primary_muscles": [
+        "biceps"
+      ],
+      "secondary_muscles": [
+        "brachialis_brachioradialis"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "67kg",
+        "scheme": "stack_or_total",
+        "total_kg": 67.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=UsaY33N4KEw",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "barbell_curl",
+      "name_en": "Barbell curl",
+      "name_ro": "bicep bar curl",
+      "body_region": "arms",
+      "movement_pattern": "elbow_flexion_supinated",
+      "pattern_description": "Palms-up curls — biceps",
+      "primary_muscles": [
+        "biceps"
+      ],
+      "secondary_muscles": [
+        "brachialis_brachioradialis"
+      ],
+      "equipment": "barbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "bar + 12.5kg *2",
+        "scheme": "bar_plus_per_side",
+        "per_side_kg": 12.5,
+        "bar_kg": null,
+        "note": "bar weight not recorded; app must ask once"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/9Q7qbqAFw9Y",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "bench_dip",
+      "name_en": "Bench dip",
+      "name_ro": "bench dip",
+      "body_region": "arms",
+      "movement_pattern": "triceps_compound",
+      "pattern_description": "Multi-joint pressing biased to triceps",
+      "primary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "secondary_muscles": [
+        "front_delt",
+        "chest_mid"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/cFK5G2Exwwo",
+      "notes": "No-equipment option.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_overhead_extension",
+      "name_en": "Dumbbell overhead extension",
+      "name_ro": "overhead extension",
+      "body_region": "arms",
+      "movement_pattern": "triceps_overhead",
+      "pattern_description": "Elbow extension with arms overhead — long head",
+      "primary_muscles": [
+        "triceps_long"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "14kg",
+        "scheme": "stack_or_total",
+        "total_kg": 14.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/8FNGBJUHfsA",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "cable_overhead_extension",
+      "name_en": "Cable overhead triceps extension",
+      "name_ro": "cabel overhead tricep extension",
+      "body_region": "arms",
+      "movement_pattern": "triceps_overhead",
+      "pattern_description": "Elbow extension with arms overhead — long head",
+      "primary_muscles": [
+        "triceps_long"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "71kg",
+        "scheme": "stack_or_total",
+        "total_kg": 71.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/bqqBD4f0Vn0",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "rope_pushdown",
+      "name_en": "Rope pushdown",
+      "name_ro": "rope extensions",
+      "body_region": "arms",
+      "movement_pattern": "triceps_pushdown",
+      "pattern_description": "Elbow extension with arms at the side — lateral and medial heads",
+      "primary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "secondary_muscles": [
+        "triceps_long"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "67kg",
+        "scheme": "stack_or_total",
+        "total_kg": 67.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/6Dh8sD6aNQE",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "straight_bar_pushdown",
+      "name_en": "Straight-bar pushdown",
+      "name_ro": "tricep pulldown",
+      "body_region": "arms",
+      "movement_pattern": "triceps_pushdown",
+      "pattern_description": "Elbow extension with arms at the side — lateral and medial heads",
+      "primary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "secondary_muscles": [
+        "triceps_long"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "67kg",
+        "scheme": "stack_or_total",
+        "total_kg": 67.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/Rc7-euA8FDI",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "reverse_grip_pushdown",
+      "name_en": "Reverse-grip pushdown",
+      "name_ro": "reverse grip tricep pulldown",
+      "body_region": "arms",
+      "movement_pattern": "triceps_pushdown",
+      "pattern_description": "Elbow extension with arms at the side — lateral and medial heads",
+      "primary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "secondary_muscles": [
+        "triceps_long"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "67kg",
+        "scheme": "stack_or_total",
+        "total_kg": 67.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/f9tQYfBP-aA",
+      "notes": "The original file had this twice under slightly different names; merged into one entry.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "close_grip_bench",
+      "name_en": "Close-grip bench press",
+      "name_ro": "close grip triceps",
+      "body_region": "arms",
+      "movement_pattern": "triceps_compound",
+      "pattern_description": "Multi-joint pressing biased to triceps",
+      "primary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "secondary_muscles": [
+        "chest_mid",
+        "front_delt"
+      ],
+      "equipment": "barbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "bar +  10kg * 2",
+        "scheme": "bar_plus_per_side",
+        "per_side_kg": 10.0,
+        "bar_kg": null,
+        "note": "bar weight not recorded; app must ask once"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/43rg7fBNP2w",
+      "notes": "Also counts as chest pressing volume; avoid on a day with heavy flat presses.",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 6,
+        "max": 10,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "tricep_kickback",
+      "name_en": "Triceps kickback",
+      "name_ro": "tricep kickback",
+      "body_region": "arms",
+      "movement_pattern": "triceps_pushdown",
+      "pattern_description": "Elbow extension with arms at the side — lateral and medial heads",
+      "primary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "secondary_muscles": [],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": true,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "14kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 14.0,
+        "total_kg": 28.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/3Bv1n7-DN7c",
+      "notes": "Lowest loading potential in the pushdown pool; bent-over position adds low-back load.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "leg_extension",
+      "name_en": "Leg extension",
+      "name_ro": "leg extension",
+      "body_region": "legs",
+      "movement_pattern": "leg_extension",
+      "pattern_description": "Knee extension isolation — quads",
+      "primary_muscles": [
+        "quads"
+      ],
+      "secondary_muscles": [],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "91kg",
+        "scheme": "stack_or_total",
+        "total_kg": 91.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/d3d2yz7V26c",
+      "notes": "Back-friendly quad isolation.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "leg_press",
+      "name_en": "Leg press",
+      "name_ro": "presa",
+      "body_region": "legs",
+      "movement_pattern": "squat",
+      "pattern_description": "Knee-dominant bilateral pushing — quads and glutes",
+      "primary_muscles": [
+        "quads",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "hamstrings",
+        "adductors"
+      ],
+      "equipment": "machine",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "146kg",
+        "scheme": "stack_or_total",
+        "total_kg": 146.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/nDh_BlnLCGc",
+      "notes": "Best squat-pattern option on back-sensitive days (no axial load).",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "barbell_squat",
+      "name_en": "Barbell back squat",
+      "name_ro": "Squats with bar",
+      "body_region": "legs",
+      "movement_pattern": "squat",
+      "pattern_description": "Knee-dominant bilateral pushing — quads and glutes",
+      "primary_muscles": [
+        "quads",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "erectors",
+        "adductors",
+        "hamstrings"
+      ],
+      "equipment": "barbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "high",
+      "logged_max": {
+        "raw": "bar + 20kg *2",
+        "scheme": "bar_plus_per_side",
+        "per_side_kg": 20.0,
+        "bar_kg": null,
+        "note": "bar weight not recorded; app must ask once"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/PPmvh7gBTi0",
+      "notes": "Highest axial spinal load in the library. Skip or swap on back-pain days.",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 5,
+        "max": 8,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "machine_squat",
+      "name_en": "Machine squat / hack squat",
+      "name_ro": "machine squats",
+      "body_region": "legs",
+      "movement_pattern": "squat",
+      "pattern_description": "Knee-dominant bilateral pushing — quads and glutes",
+      "primary_muscles": [
+        "quads",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "adductors"
+      ],
+      "equipment": "machine",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "60kg",
+        "scheme": "stack_or_total",
+        "total_kg": 60.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/4-WeSg6yJRI",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_squat",
+      "name_en": "Dumbbell / goblet squat",
+      "name_ro": "Dumbbell squats",
+      "body_region": "legs",
+      "movement_pattern": "squat",
+      "pattern_description": "Knee-dominant bilateral pushing — quads and glutes",
+      "primary_muscles": [
+        "quads",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "transverse_core",
+        "erectors"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "30kg",
+        "scheme": "stack_or_total",
+        "total_kg": 30.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/cuUPtfanAFQ",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "leg_curl",
+      "name_en": "Leg curl",
+      "name_ro": "leg curl",
+      "body_region": "legs",
+      "movement_pattern": "leg_curl",
+      "pattern_description": "Knee flexion isolation — hamstrings",
+      "primary_muscles": [
+        "hamstrings"
+      ],
+      "secondary_muscles": [
+        "calves_gastroc"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "75kg",
+        "scheme": "stack_or_total",
+        "total_kg": 75.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/_lgE0gPvbik",
+      "notes": "Trains knee flexion only. Does NOT cover the hip-extension function of the hamstring.",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_lunges",
+      "name_en": "Dumbbell lunges (walking or stationary)",
+      "name_ro": "lunges with dumbell",
+      "body_region": "legs",
+      "movement_pattern": "single_leg",
+      "pattern_description": "Unilateral knee-dominant work — quads, glutes, stability",
+      "primary_muscles": [
+        "quads",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "hamstrings",
+        "adductors"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": true,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "14kg *2",
+        "scheme": "per_hand",
+        "per_hand_kg": 14.0,
+        "total_kg": 28.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/TwEH620Pn6A",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 12,
+        "unit": "reps_per_leg"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "bulgarian_split_squat",
+      "name_en": "Bulgarian split squat",
+      "name_ro": "bulgarian split squats",
+      "body_region": "legs",
+      "movement_pattern": "single_leg",
+      "pattern_description": "Unilateral knee-dominant work — quads, glutes, stability",
+      "primary_muscles": [
+        "quads",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "hamstrings",
+        "adductors"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": true,
+      "is_unilateral": true,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "14kg * 2",
+        "scheme": "per_hand",
+        "per_hand_kg": 14.0,
+        "total_kg": 28.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/or1frhkjBDc",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps_per_leg"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "hip_abduction_adduction",
+      "name_en": "Hip abduction / adduction machine",
+      "name_ro": "hip abductors /adductor",
+      "body_region": "legs",
+      "movement_pattern": "hip_abduction_adduction",
+      "pattern_description": "Frontal-plane hip work — abductors and adductors",
+      "primary_muscles": [
+        "abductors",
+        "adductors"
+      ],
+      "secondary_muscles": [
+        "glutes"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "65kg",
+        "scheme": "stack_or_total",
+        "total_kg": 65.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/BXs0PIkdXGs",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "machine_calf_raise",
+      "name_en": "Standing calf raise (machine)",
+      "name_ro": "calf raises on machine",
+      "body_region": "legs",
+      "movement_pattern": "calf_standing",
+      "pattern_description": "Straight-knee calf raises — gastrocnemius",
+      "primary_muscles": [
+        "calves_gastroc"
+      ],
+      "secondary_muscles": [
+        "calves_soleus"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "60kg",
+        "scheme": "stack_or_total",
+        "total_kg": 60.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/95itLfMBG40",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "db_calf_raise",
+      "name_en": "Standing calf raise (dumbbells)",
+      "name_ro": "calf raises with dumbbells",
+      "body_region": "legs",
+      "movement_pattern": "calf_standing",
+      "pattern_description": "Straight-knee calf raises — gastrocnemius",
+      "primary_muscles": [
+        "calves_gastroc"
+      ],
+      "secondary_muscles": [
+        "calves_soleus",
+        "forearms_grip"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "20kg",
+        "scheme": "stack_or_total",
+        "total_kg": 20.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/E1mG5L9rpFc",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "plank",
+      "name_en": "Plank",
+      "name_ro": "Plank",
+      "body_region": "core",
+      "movement_pattern": "core_antiextension",
+      "pattern_description": "Resisting spinal extension — deep core",
+      "primary_muscles": [
+        "transverse_core"
+      ],
+      "secondary_muscles": [
+        "rectus_abdominis",
+        "front_delt"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/v25dawSzRTM",
+      "notes": "Back-friendly; safe on flare-up days.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 30,
+        "max": 60,
+        "unit": "seconds"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "crunch",
+      "name_en": "Crunch",
+      "name_ro": "normal crunches",
+      "body_region": "core",
+      "movement_pattern": "core_flexion",
+      "pattern_description": "Spinal flexion — rectus abdominis",
+      "primary_muscles": [
+        "rectus_abdominis"
+      ],
+      "secondary_muscles": [],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/eeJ_CYqSoT4",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 25,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "weighted_crunch",
+      "name_en": "Weighted crunch",
+      "name_ro": "crunch with weights",
+      "body_region": "core",
+      "movement_pattern": "core_flexion",
+      "pattern_description": "Spinal flexion — rectus abdominis",
+      "primary_muscles": [
+        "rectus_abdominis"
+      ],
+      "secondary_muscles": [],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "10kg",
+        "scheme": "stack_or_total",
+        "total_kg": 10.0
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/EkbhBticgY0",
+      "notes": "Only loadable core movement in the original file.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "knee_touch_crunch",
+      "name_en": "Knee-touch crunch",
+      "name_ro": "knee touch crunch",
+      "body_region": "core",
+      "movement_pattern": "core_flexion",
+      "pattern_description": "Spinal flexion — rectus abdominis",
+      "primary_muscles": [
+        "rectus_abdominis"
+      ],
+      "secondary_muscles": [],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=7O7yr4xY_1g",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 25,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "leg_scissor",
+      "name_en": "Leg scissors",
+      "name_ro": "leg scissor",
+      "body_region": "core",
+      "movement_pattern": "core_hip_flexion",
+      "pattern_description": "Hip flexion with the trunk braced — lower abs and hip flexors",
+      "primary_muscles": [
+        "hip_flexors",
+        "rectus_abdominis"
+      ],
+      "secondary_muscles": [],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/waIXZ0LA1YE",
+      "notes": "Lying leg movements can pull the lumbar spine into extension; keep the low back flat.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps_per_leg"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "knees_to_chest",
+      "name_en": "Knees to chest",
+      "name_ro": "knees to chest",
+      "body_region": "core",
+      "movement_pattern": "core_hip_flexion",
+      "pattern_description": "Hip flexion with the trunk braced — lower abs and hip flexors",
+      "primary_muscles": [
+        "rectus_abdominis",
+        "hip_flexors"
+      ],
+      "secondary_muscles": [],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/7oPUAVy-NZs",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "mountain_climbers",
+      "name_en": "Mountain climbers",
+      "name_ro": "mountain climbers",
+      "body_region": "core",
+      "movement_pattern": "core_hip_flexion",
+      "pattern_description": "Hip flexion with the trunk braced — lower abs and hip flexors",
+      "primary_muscles": [
+        "hip_flexors",
+        "transverse_core"
+      ],
+      "secondary_muscles": [
+        "front_delt"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=hq_0YlyfqGM",
+      "notes": "Also a conditioning finisher.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 20,
+        "max": 40,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "russian_twists",
+      "name_en": "Russian twists",
+      "name_ro": "russian twists",
+      "body_region": "core",
+      "movement_pattern": "core_rotation",
+      "pattern_description": "Rotation and lateral flexion — obliques",
+      "primary_muscles": [
+        "obliques"
+      ],
+      "secondary_muscles": [
+        "rectus_abdominis",
+        "hip_flexors"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/aRUMRbl7KS4",
+      "notes": "Loaded lumbar rotation; the least back-friendly core option here.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 25,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "heel_touch",
+      "name_en": "Heel touches",
+      "name_ro": "heel touch",
+      "body_region": "core",
+      "movement_pattern": "core_rotation",
+      "pattern_description": "Rotation and lateral flexion — obliques",
+      "primary_muscles": [
+        "obliques"
+      ],
+      "secondary_muscles": [
+        "rectus_abdominis"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=9bR-elyolBQ",
+      "notes": "Lateral flexion rather than true rotation.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 20,
+        "max": 30,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "bicycle_crunch",
+      "name_en": "Bicycle crunch",
+      "name_ro": "bycicle crunch",
+      "body_region": "core",
+      "movement_pattern": "core_rotation",
+      "pattern_description": "Rotation and lateral flexion — obliques",
+      "primary_muscles": [
+        "obliques"
+      ],
+      "secondary_muscles": [
+        "rectus_abdominis",
+        "hip_flexors"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/shorts/CakPX7X-mSw",
+      "notes": "",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 15,
+        "max": 25,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "side_crunch",
+      "name_en": "Side crunch",
+      "name_ro": "side crunch",
+      "body_region": "core",
+      "movement_pattern": "core_rotation",
+      "pattern_description": "Rotation and lateral flexion — obliques",
+      "primary_muscles": [
+        "obliques"
+      ],
+      "secondary_muscles": [],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": true,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": true,
+      "youtube": "https://www.youtube.com/watch?v=0miEii4wHEI",
+      "notes": "Lateral flexion.",
+      "source": "logged",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps_per_side"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "back_extension_45",
+      "name_en": "45-degree back extension",
+      "name_ro": "extensii lombare",
+      "body_region": "back",
+      "movement_pattern": "hinge",
+      "pattern_description": "Hip-dominant bending — hamstrings, glutes, erectors",
+      "primary_muscles": [
+        "erectors",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "hamstrings"
+      ],
+      "equipment": "machine_or_bodyweight",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. Gentlest entry into the hinge pattern; start bodyweight, add load slowly.",
+      "source": "gap_filler",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "cable_pull_through",
+      "name_en": "Cable pull-through",
+      "name_ro": "pull-through la cablu",
+      "body_region": "legs",
+      "movement_pattern": "hinge",
+      "pattern_description": "Hip-dominant bending — hamstrings, glutes, erectors",
+      "primary_muscles": [
+        "glutes",
+        "hamstrings"
+      ],
+      "secondary_muscles": [
+        "erectors"
+      ],
+      "equipment": "cable",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. Teaches the hinge with load pulling horizontally, not compressing the spine. Best first hinge given back history.",
+      "source": "gap_filler",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "romanian_deadlift",
+      "name_en": "Romanian deadlift",
+      "name_ro": "indreptari romanesti",
+      "body_region": "legs",
+      "movement_pattern": "hinge",
+      "pattern_description": "Hip-dominant bending — hamstrings, glutes, erectors",
+      "primary_muscles": [
+        "hamstrings",
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "erectors",
+        "forearms_grip"
+      ],
+      "equipment": "barbell_or_dumbbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "high",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. The real fix for hamstring hip-extension. High back demand: earn it after pull-throughs and back extensions feel easy.",
+      "source": "gap_filler",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 6,
+        "max": 10,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "hip_thrust",
+      "name_en": "Hip thrust / glute bridge",
+      "name_ro": "hip thrust",
+      "body_region": "legs",
+      "movement_pattern": "hip_thrust",
+      "pattern_description": "Horizontal hip extension — glutes",
+      "primary_muscles": [
+        "glutes"
+      ],
+      "secondary_muscles": [
+        "hamstrings"
+      ],
+      "equipment": "barbell_or_bodyweight",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. Direct glute loading with a neutral spine; very back-friendly.",
+      "source": "gap_filler",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "seated_calf_raise",
+      "name_en": "Seated calf raise",
+      "name_ro": "ridicari pe varfuri asezat",
+      "body_region": "legs",
+      "movement_pattern": "calf_seated",
+      "pattern_description": "Bent-knee calf raises — soleus",
+      "primary_muscles": [
+        "calves_soleus"
+      ],
+      "secondary_muscles": [
+        "calves_gastroc"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. Bent knee shifts work to the soleus; not covered by standing raises.",
+      "source": "gap_filler",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 15,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "cable_crunch",
+      "name_en": "Cable crunch",
+      "name_ro": "crunch la cablu",
+      "body_region": "core",
+      "movement_pattern": "core_flexion",
+      "pattern_description": "Spinal flexion — rectus abdominis",
+      "primary_muscles": [
+        "rectus_abdominis"
+      ],
+      "secondary_muscles": [
+        "obliques"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "moderate",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. Lets you progressively overload the abs instead of only adding reps.",
+      "source": "gap_filler",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "hanging_knee_raise",
+      "name_en": "Hanging knee raise",
+      "name_ro": "ridicari de genunchi la bara",
+      "body_region": "core",
+      "movement_pattern": "core_hip_flexion",
+      "pattern_description": "Hip flexion with the trunk braced — lower abs and hip flexors",
+      "primary_muscles": [
+        "rectus_abdominis",
+        "hip_flexors"
+      ],
+      "secondary_muscles": [
+        "forearms_grip"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. Hanging decompresses the spine, unlike lying leg raises.",
+      "source": "gap_filler",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "chin_up",
+      "name_en": "Chin-up / pull-up",
+      "name_ro": "tractiuni",
+      "body_region": "back",
+      "movement_pattern": "vertical_pull",
+      "pattern_description": "Pulling from overhead — lats",
+      "primary_muscles": [
+        "lats"
+      ],
+      "secondary_muscles": [
+        "biceps",
+        "mid_traps_rhomboids",
+        "forearms_grip"
+      ],
+      "equipment": "bodyweight",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "youtube": "",
+      "notes": "GAP FILLER. Bodyweight vertical pull; works in a gym with no cable stack.",
+      "source": "gap_filler",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 6,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "incline_barbell_press",
+      "name_en": "Incline barbell press",
+      "name_ro": "Impins cu bara inclinat",
+      "body_region": "chest",
+      "movement_pattern": "incline_press",
+      "primary_muscles": [
+        "chest_upper"
+      ],
+      "secondary_muscles": [
+        "front_delt",
+        "triceps_lateral_medial"
+      ],
+      "equipment": "barbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "notes": "NEW. The incline_press pool had only one exercise; this is the heavy option for it.",
+      "pattern_description": "Incline pressing — upper chest",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 6,
+        "max": 10,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "incline_machine_press",
+      "name_en": "Incline machine press",
+      "name_ro": "Impins la aparat inclinat",
+      "body_region": "chest",
+      "movement_pattern": "incline_press",
+      "primary_muscles": [
+        "chest_upper"
+      ],
+      "secondary_muscles": [
+        "front_delt",
+        "triceps_lateral_medial"
+      ],
+      "equipment": "machine",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "notes": "NEW. Third option for the incline slot so it can rotate like the others.",
+      "pattern_description": "Incline pressing — upper chest",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "chest_dip",
+      "name_en": "Chest dip",
+      "name_ro": "Paralele (dips)",
+      "body_region": "chest",
+      "movement_pattern": "horizontal_press",
+      "primary_muscles": [
+        "chest_mid"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial",
+        "front_delt"
+      ],
+      "equipment": "bodyweight_or_weighted",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "notes": "NEW. Leaning forward biases lower/mid chest. Add a belt once bodyweight is easy.",
+      "pattern_description": "Flat pressing — mid chest, triceps, front delts",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 8,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "chest_supported_row",
+      "name_en": "Chest-supported row",
+      "name_ro": "Ramat cu sprijin pe banca",
+      "body_region": "back",
+      "movement_pattern": "horizontal_row",
+      "primary_muscles": [
+        "mid_traps_rhomboids",
+        "lats"
+      ],
+      "secondary_muscles": [
+        "rear_delt",
+        "biceps"
+      ],
+      "equipment": "machine_or_dumbbell",
+      "is_compound": true,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "notes": "NEW. Best row for back-sensitive days — the pad removes all spinal load.",
+      "pattern_description": "Pulling toward the torso — mid traps, rhomboids, lats",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "cable_lateral_raise",
+      "name_en": "Cable lateral raise",
+      "name_ro": "Ridicari laterale la cablu",
+      "body_region": "shoulders",
+      "movement_pattern": "lateral_raise",
+      "primary_muscles": [
+        "side_delt"
+      ],
+      "secondary_muscles": [
+        "upper_traps"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": true,
+      "spinal_load": "low",
+      "notes": "NEW. Constant tension at the bottom, where dumbbells give almost none.",
+      "pattern_description": "Shoulder abduction — side delts",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 12,
+        "max": 20,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "incline_db_curl",
+      "name_en": "Incline dumbbell curl",
+      "name_ro": "Flexii pe banca inclinata",
+      "body_region": "arms",
+      "movement_pattern": "elbow_flexion_extended",
+      "primary_muscles": [
+        "biceps"
+      ],
+      "secondary_muscles": [
+        "brachialis_brachioradialis"
+      ],
+      "equipment": "dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "notes": "NEW. Elbows behind the torso stretches the biceps long head — a function nothing in the 3-year log covered.",
+      "pattern_description": "Curls with elbows behind the torso — biceps long head",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "skull_crusher",
+      "name_en": "Skull crusher",
+      "name_ro": "Extensii culcat (skull crusher)",
+      "body_region": "arms",
+      "movement_pattern": "triceps_overhead",
+      "primary_muscles": [
+        "triceps_long"
+      ],
+      "secondary_muscles": [
+        "triceps_lateral_medial"
+      ],
+      "equipment": "barbell_or_dumbbell",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "notes": "NEW. Heaviest loadable long-head option; rotate with the overhead extensions.",
+      "pattern_description": "Elbow extension with arms overhead — long head",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 8,
+        "max": 12,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "seated_leg_curl",
+      "name_en": "Seated leg curl",
+      "name_ro": "Flexii picioare asezat",
+      "body_region": "legs",
+      "movement_pattern": "leg_curl",
+      "primary_muscles": [
+        "hamstrings"
+      ],
+      "secondary_muscles": [
+        "calves_gastroc"
+      ],
+      "equipment": "machine",
+      "is_compound": false,
+      "is_unilateral": false,
+      "spinal_load": "low",
+      "notes": "NEW. Hip flexed = hamstring trained at longer length; generally outperforms the lying version for growth.",
+      "pattern_description": "Knee flexion isolation — hamstrings",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 4,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    },
+    {
+      "id": "pallof_press",
+      "name_en": "Pallof press",
+      "name_ro": "Pallof press",
+      "body_region": "core",
+      "movement_pattern": "core_antirotation",
+      "primary_muscles": [
+        "obliques",
+        "transverse_core"
+      ],
+      "secondary_muscles": [
+        "front_delt"
+      ],
+      "equipment": "cable",
+      "is_compound": false,
+      "is_unilateral": true,
+      "spinal_load": "low",
+      "notes": "NEW. Trains the obliques without loading spinal rotation — the back-friendly replacement for russian twists.",
+      "pattern_description": "Resisting rotation — deep core, very spine-friendly",
+      "logged_max": {
+        "raw": "-",
+        "scheme": "bodyweight_or_none"
+      },
+      "in_log": false,
+      "source": "new_option",
+      "youtube": "",
+      "default_sets": 3,
+      "rep_range": {
+        "min": 10,
+        "max": 15,
+        "unit": "reps"
+      },
+      "progression": "double_progression"
+    }
+  ],
+  "splits": {
+    "4_day": {
+      "label": "4 days/week",
+      "days": [
+        {
+          "day": 1,
+          "name": "Chest + Abs + Cardio",
+          "slots": [
+            {
+              "slot_id": "upper_chest",
+              "label": "Upper chest press",
+              "target_subgroup": "chest_upper",
+              "eligible_patterns": [
+                "incline_press"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "mid_chest",
+              "label": "Flat / mid chest press",
+              "target_subgroup": "chest_mid",
+              "eligible_patterns": [
+                "horizontal_press"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "chest_adduction",
+              "label": "Fly",
+              "target_subgroup": "chest_mid|chest_upper",
+              "eligible_patterns": [
+                "chest_fly"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "serratus",
+              "label": "Pullover",
+              "target_subgroup": "lats|serratus",
+              "eligible_patterns": [
+                "pullover"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_flexion",
+              "label": "Spinal flexion",
+              "target_subgroup": "rectus_abdominis",
+              "eligible_patterns": [
+                "core_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_lower",
+              "label": "Hip flexion",
+              "target_subgroup": "rectus_abdominis|hip_flexors",
+              "eligible_patterns": [
+                "core_hip_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_brace",
+              "label": "Bracing / anti-rotation",
+              "target_subgroup": "obliques|transverse_core",
+              "eligible_patterns": [
+                "core_antirotation",
+                "core_antiextension",
+                "core_rotation"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            }
+          ],
+          "finisher": "cardio 10-20 min"
+        },
+        {
+          "day": 2,
+          "name": "Back + Cardio",
+          "slots": [
+            {
+              "slot_id": "lats_vertical",
+              "label": "Vertical pull",
+              "target_subgroup": "lats",
+              "eligible_patterns": [
+                "vertical_pull"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "midback_row",
+              "label": "Row",
+              "target_subgroup": "mid_traps_rhomboids",
+              "eligible_patterns": [
+                "horizontal_row"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "lats_second",
+              "label": "Second lat angle",
+              "target_subgroup": "lats",
+              "eligible_patterns": [
+                "pullover",
+                "horizontal_row"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "rear_delts",
+              "label": "Rear delts",
+              "target_subgroup": "rear_delt",
+              "eligible_patterns": [
+                "rear_delt"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "traps",
+              "label": "Traps",
+              "target_subgroup": "upper_traps",
+              "eligible_patterns": [
+                "shrug_traps",
+                "upright_row"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "erectors",
+              "label": "Lower back",
+              "target_subgroup": "erectors",
+              "eligible_patterns": [
+                "hinge"
+              ],
+              "priority": "core",
+              "frequency": "per_week"
+            }
+          ],
+          "finisher": "cardio 10-20 min"
+        },
+        {
+          "day": 3,
+          "name": "Legs",
+          "slots": [
+            {
+              "slot_id": "quad_compound",
+              "label": "Squat pattern",
+              "target_subgroup": "quads|glutes",
+              "eligible_patterns": [
+                "squat"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "hip_extension",
+              "label": "Hip extension",
+              "target_subgroup": "hamstrings|glutes",
+              "eligible_patterns": [
+                "hinge",
+                "hip_thrust"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "knee_flexion",
+              "label": "Knee flexion",
+              "target_subgroup": "hamstrings",
+              "eligible_patterns": [
+                "leg_curl"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "quad_isolation",
+              "label": "Quad isolation",
+              "target_subgroup": "quads",
+              "eligible_patterns": [
+                "leg_extension"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "unilateral",
+              "label": "Single leg",
+              "target_subgroup": "quads|glutes",
+              "eligible_patterns": [
+                "single_leg"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "hips",
+              "label": "Abductors / adductors",
+              "target_subgroup": "abductors|adductors",
+              "eligible_patterns": [
+                "hip_abduction_adduction"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "calves_gastroc",
+              "label": "Standing calves",
+              "target_subgroup": "calves_gastroc",
+              "eligible_patterns": [
+                "calf_standing"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "calves_soleus",
+              "label": "Seated calves",
+              "target_subgroup": "calves_soleus",
+              "eligible_patterns": [
+                "calf_seated"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            }
+          ],
+          "finisher": null
+        },
+        {
+          "day": 4,
+          "name": "Shoulders + Arms + Abs",
+          "slots": [
+            {
+              "slot_id": "front_delt",
+              "label": "Overhead press",
+              "target_subgroup": "front_delt",
+              "eligible_patterns": [
+                "overhead_press"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "side_delt",
+              "label": "Lateral raise",
+              "target_subgroup": "side_delt",
+              "eligible_patterns": [
+                "lateral_raise"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "rear_delt",
+              "label": "Rear delts",
+              "target_subgroup": "rear_delt",
+              "eligible_patterns": [
+                "rear_delt"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "traps",
+              "label": "Traps",
+              "target_subgroup": "upper_traps",
+              "eligible_patterns": [
+                "shrug_traps",
+                "upright_row"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "biceps_flexed",
+              "label": "Curl, elbows forward or neutral to body",
+              "target_subgroup": "biceps",
+              "eligible_patterns": [
+                "elbow_flexion_supinated",
+                "elbow_flexion_preacher"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "biceps_stretched",
+              "label": "Curl, elbows behind body",
+              "target_subgroup": "biceps",
+              "eligible_patterns": [
+                "elbow_flexion_extended"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "brachialis",
+              "label": "Neutral-grip curl",
+              "target_subgroup": "brachialis_brachioradialis",
+              "eligible_patterns": [
+                "elbow_flexion_neutral"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "triceps_long",
+              "label": "Overhead triceps",
+              "target_subgroup": "triceps_long",
+              "eligible_patterns": [
+                "triceps_overhead"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "triceps_lateral",
+              "label": "Pushdown or close-grip press",
+              "target_subgroup": "triceps_lateral_medial",
+              "eligible_patterns": [
+                "triceps_pushdown",
+                "triceps_compound"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_flexion",
+              "label": "Spinal flexion",
+              "target_subgroup": "rectus_abdominis",
+              "eligible_patterns": [
+                "core_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_lower",
+              "label": "Hip flexion",
+              "target_subgroup": "rectus_abdominis|hip_flexors",
+              "eligible_patterns": [
+                "core_hip_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            }
+          ],
+          "finisher": null
+        }
+      ],
+      "notes": "Day 4 is the dense one; superset biceps with triceps. The erector slot is core but per_week: it fills only if no hinge has been trained in the trailing 7 days, so it self-skips when leg day's hip-extension slot already took a hinge."
+    },
+    "3_day": {
+      "label": "3 days/week",
+      "days": [
+        {
+          "day": 1,
+          "name": "Chest + Triceps + Abs",
+          "finisher": "cardio or a 30 min walk",
+          "slots": [
+            {
+              "slot_id": "upper_chest",
+              "label": "Upper chest press",
+              "target_subgroup": "chest_upper",
+              "eligible_patterns": [
+                "incline_press"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "mid_chest",
+              "label": "Flat / mid chest press",
+              "target_subgroup": "chest_mid",
+              "eligible_patterns": [
+                "horizontal_press"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "chest_adduction",
+              "label": "Fly",
+              "target_subgroup": "chest_mid|chest_upper",
+              "eligible_patterns": [
+                "chest_fly"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "front_delt",
+              "label": "Overhead press",
+              "target_subgroup": "front_delt",
+              "eligible_patterns": [
+                "overhead_press"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "side_delt",
+              "label": "Lateral raise",
+              "target_subgroup": "side_delt",
+              "eligible_patterns": [
+                "lateral_raise"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "triceps_long",
+              "label": "Overhead triceps",
+              "target_subgroup": "triceps_long",
+              "eligible_patterns": [
+                "triceps_overhead"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "triceps_lateral",
+              "label": "Pushdown",
+              "target_subgroup": "triceps_lateral_medial",
+              "eligible_patterns": [
+                "triceps_pushdown",
+                "triceps_compound"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "calves_soleus",
+              "label": "Seated calves",
+              "target_subgroup": "calves_soleus",
+              "eligible_patterns": [
+                "calf_seated"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_flexion",
+              "label": "Spinal flexion",
+              "target_subgroup": "rectus_abdominis",
+              "eligible_patterns": [
+                "core_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_lower",
+              "label": "Hip flexion",
+              "target_subgroup": "rectus_abdominis|hip_flexors",
+              "eligible_patterns": [
+                "core_hip_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_brace",
+              "label": "Bracing / anti-rotation",
+              "target_subgroup": "obliques|transverse_core",
+              "eligible_patterns": [
+                "core_antirotation",
+                "core_antiextension",
+                "core_rotation"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "name": "Back + Biceps",
+          "finisher": "cardio or a 30 min walk",
+          "slots": [
+            {
+              "slot_id": "lats_vertical",
+              "label": "Vertical pull",
+              "target_subgroup": "lats",
+              "eligible_patterns": [
+                "vertical_pull"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "midback_row",
+              "label": "Row",
+              "target_subgroup": "mid_traps_rhomboids",
+              "eligible_patterns": [
+                "horizontal_row"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "lats_second",
+              "label": "Second lat angle / serratus",
+              "target_subgroup": "lats|serratus",
+              "eligible_patterns": [
+                "pullover",
+                "horizontal_row"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "rear_delts",
+              "label": "Rear delts",
+              "target_subgroup": "rear_delt",
+              "eligible_patterns": [
+                "rear_delt"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "traps",
+              "label": "Traps",
+              "target_subgroup": "upper_traps",
+              "eligible_patterns": [
+                "shrug_traps",
+                "upright_row"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "erectors",
+              "label": "Lower back",
+              "target_subgroup": "erectors",
+              "eligible_patterns": [
+                "hinge"
+              ],
+              "priority": "core",
+              "frequency": "per_week"
+            },
+            {
+              "slot_id": "biceps_flexed",
+              "label": "Curl, elbows forward or neutral to body",
+              "target_subgroup": "biceps",
+              "eligible_patterns": [
+                "elbow_flexion_supinated",
+                "elbow_flexion_preacher"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "biceps_stretched",
+              "label": "Curl, elbows behind body",
+              "target_subgroup": "biceps",
+              "eligible_patterns": [
+                "elbow_flexion_extended"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "brachialis",
+              "label": "Neutral-grip curl",
+              "target_subgroup": "brachialis_brachioradialis",
+              "eligible_patterns": [
+                "elbow_flexion_neutral"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "name": "Legs + Abs",
+          "finisher": null,
+          "slots": [
+            {
+              "slot_id": "quad_compound",
+              "label": "Squat pattern",
+              "target_subgroup": "quads|glutes",
+              "eligible_patterns": [
+                "squat"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "hip_extension",
+              "label": "Hip extension",
+              "target_subgroup": "hamstrings|glutes",
+              "eligible_patterns": [
+                "hinge",
+                "hip_thrust"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "knee_flexion",
+              "label": "Knee flexion",
+              "target_subgroup": "hamstrings",
+              "eligible_patterns": [
+                "leg_curl"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "quad_isolation",
+              "label": "Quad isolation",
+              "target_subgroup": "quads",
+              "eligible_patterns": [
+                "leg_extension"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "unilateral",
+              "label": "Single leg",
+              "target_subgroup": "quads|glutes",
+              "eligible_patterns": [
+                "single_leg"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "hips",
+              "label": "Abductors / adductors",
+              "target_subgroup": "abductors|adductors",
+              "eligible_patterns": [
+                "hip_abduction_adduction"
+              ],
+              "priority": "optional",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "calves_gastroc",
+              "label": "Standing calves",
+              "target_subgroup": "calves_gastroc",
+              "eligible_patterns": [
+                "calf_standing"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_flexion",
+              "label": "Spinal flexion",
+              "target_subgroup": "rectus_abdominis",
+              "eligible_patterns": [
+                "core_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            },
+            {
+              "slot_id": "abs_lower",
+              "label": "Hip flexion",
+              "target_subgroup": "rectus_abdominis|hip_flexors",
+              "eligible_patterns": [
+                "core_hip_flexion"
+              ],
+              "priority": "core",
+              "frequency": "per_session"
+            }
+          ]
+        }
+      ],
+      "notes": "Built for full coverage rather than short sessions: every muscle group the 4-day split trains is trained here too. Seated calves sit on day 1 to keep leg day manageable and to give calves two exposures. The erector slot is per_week and self-skips if leg day already took a hinge."
+    }
+  }
+}
